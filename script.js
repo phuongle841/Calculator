@@ -97,11 +97,10 @@ function state4(equalButton) {
   let answer = operate(variableA, variableB, operator);
   lowerLineStack.answer = parseFloat(answer.toFixed(3));
   refreshLowerLine();
-}
-function changeState4To2() {
   upperLineStack.variableA = lowerLineStack.answer;
-  state = 2;
+  upperLineStack.variableB = "";
 }
+
 function clearScreenAndState() {
   state = 1;
   upperLineStack.variableA = "Enter a number";
@@ -114,14 +113,17 @@ function clearScreenAndState() {
 }
 functionButtons.forEach((button) => {
   button.addEventListener("click", function () {
-    if (state == 1 || state == 2 || state == 4) {
+    if (state == 2) {
       state2(this);
-      state = 3;
     }
-    if (state == 4) {
-      changeState4To2();
+    if (state == 1) {
+      state = 2;
       state2(this);
+    }
+    if (state == 3) {
+      state4(this);
       state = 3;
+      state2(this);
     }
   });
 });
@@ -134,16 +136,16 @@ numberButtons.forEach((numberButton) => {
     if (state == 3) {
       state3(this);
     }
-    if (state == 4) {
-      state2(this);
+    if (state == 2) {
       state = 3;
+      state3(this);
     }
   });
 });
 
 equalButton.addEventListener("click", function (equalButton) {
   state4(equalButton);
-  state = 4;
+  state = 1;
 });
 
 clearButton.addEventListener("click", function () {
