@@ -156,11 +156,7 @@ numberButtons.forEach((numberButton) => {
 });
 functionButtons.forEach((button) => {
   button.addEventListener("click", function (e) {
-    if (state.variableA == false) {
-      clearScreenAndState();
-    }
     if (state.variableB == true) {
-      console.log("this is fucked up");
       state4(this);
     }
     if (state.operate == true) {
