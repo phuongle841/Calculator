@@ -8,7 +8,11 @@ let clearButton = document.querySelector(".button.clear");
 let max = Number.MAX_SAFE_INTEGER;
 let min = Number.MIN_SAFE_INTEGER;
 
-let state = 1;
+let state = {
+  variableA: true,
+  operate: false,
+  variableB: false,
+};
 // state 1: variableA
 // state 2: operator
 // state 3: variableB
@@ -90,68 +94,103 @@ function state3(numberButton) {
     refreshUpperLine();
   }
 }
+function checkBeforeState4() {
+  if (upperLineStack.operate == "") {
+    return false;
+  }
+  if (upperLineStack.variableA == "") {
+    return false;
+  }
+  if (upperLineStack.variableB == "") {
+    return false;
+  }
+  return true;
+}
 function state4(equalButton) {
-  let variableA = upperLineStack.variableA;
-  let variableB = upperLineStack.variableB;
-  let operator = upperLineStack.operator;
-  let answer = operate(variableA, variableB, operator);
-  lowerLineStack.answer = parseFloat(answer.toFixed(3));
-  refreshLowerLine();
-  upperLineStack.variableA = lowerLineStack.answer;
-  upperLineStack.variableB = "";
+  if (checkBeforeState4()) {
+    let variableA = upperLineStack.variableA;
+    let variableB = upperLineStack.variableB;
+    let operator = upperLineStack.operator;
+    let answer = operate(variableA, variableB, operator);
+    lowerLineStack.answer = parseFloat(answer.toFixed(3));
+    refreshLowerLine();
+    changeStateVariableA();
+    upperLineStack.variableA = lowerLineStack.answer;
+    upperLineStack.variableB = "";
+  }
 }
 
 function clearScreenAndState() {
-  state = 1;
   upperLineStack.variableA = "Enter a number";
   upperLineStack.variableB = "";
   upperLineStack.operator = "";
   upperLineStack.operatorSign = "";
   lowerLineStack.answer = "0";
+  changeStateVariableA();
   refreshUpperLine();
   refreshLowerLine();
 }
+function changeStateOperate() {
+  state.variableA = false;
+  state.variableB = false;
+  state.operate = true;
+}
+function changeStateVariableA() {
+  state.variableA = true;
+  state.variableB = false;
+  state.operate = false;
+}
+function changeStateVariableB() {
+  state.variableA = false;
+  state.variableB = true;
+  state.operate = false;
+}
+
+console.table(state);
+numberButtons.forEach((numberButton) => {
+  numberButton.addEventListener("click", function () {
+    if (state.variableA == true) {
+      state1(this);
+    }
+  });
+});
 functionButtons.forEach((button) => {
-  button.addEventListener("click", function () {
-    if (state == 2) {
-      state2(this);
+  button.addEventListener("click", function (e) {
+    if (state.variableA == false) {
+      clearScreenAndState();
     }
-    if (state == 1) {
-      state = 2;
-      state2(this);
-    }
-    if (state == 3) {
+    if (state.variableB == true) {
+      console.log("this is fucked up");
       state4(this);
-      state = 3;
+    }
+    if (state.operate == true) {
+      state2(this);
+    }
+    if (state.variableA == true) {
+      changeStateOperate();
       state2(this);
     }
   });
 });
-
 numberButtons.forEach((numberButton) => {
   numberButton.addEventListener("click", function () {
-    if (state == 1) {
-      state1(this);
-    }
-    if (state == 3) {
+    if (state.variableB == true) {
       state3(this);
     }
-    if (state == 2) {
-      state = 3;
+    if (state.operate == true) {
+      changeStateVariableB();
       state3(this);
     }
   });
 });
 
 equalButton.addEventListener("click", function (equalButton) {
-  state4(equalButton);
-  state = 1;
+  // state 4
+  if (state.variableB == true) {
+    state4(this);
+  }
 });
 
 clearButton.addEventListener("click", function () {
   clearScreenAndState();
 });
-
-function setup() {
-  //
-}
